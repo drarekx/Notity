@@ -43,6 +43,7 @@ En **Ajustes** decides si el doble ⌘C guarda, cuánto margen hay entre las dos
 ## Todo lo que hace
 
 - **Doble ⌘C para guardar**: sin permisos de Accesibilidad (mira el portapapeles, no el teclado). Margen entre las dos copias ajustable (rápido, normal, lento) o desactivable.
+- **Funciona en iTerm2 y apps parecidas**: algunas apps no vuelven a copiar si el texto no ha cambiado, y Notity no ve el segundo ⌘C. En Ajustes → **Detectar ⌘C con el teclado** (pide el permiso de Monitorización de entrada) el doble ⌘C funciona en cualquier app. Notity solo mira si pulsas ⌘C, nunca lo que escribes.
 - **Nunca guarda contraseñas**: ignora lo que 1Password, Bitwarden, el Llavero y otros gestores marcan como oculto.
 - **Panel de búsqueda** con atajo global (⌃⌥V, ⌃⌥N, ⌃⇧V o ninguno), sin permisos.
 - **Menú de la barra**: las últimas 5 notas a un clic y «Guardar portapapeles ahora».

@@ -34,6 +34,7 @@ git tag v1.0.1 && git push origin v1.0.1
 | `MainView.swift` | Ventana principal: notas y papelera, búsqueda, vista previa y acciones |
 | `NoteStore.swift` | `Note` y `NoteStore`: notas en `~/Library/Application Support/Notity/notes.json` (0600), caducidad (`purge`, cada 10 min) y papelera de 7 días; `seed()` de muestra (debug) |
 | `ClipboardWatcher.swift` | Sondea `NSPasteboard.changeCount` cada 50 ms: el mismo texto dos veces dentro de `doubleCopyWindow` → nota. Ignora tipos de nspasteboard.org (contraseñas) y sus propias escrituras |
+| `KeyWatcher.swift` | Opcional (Ajustes → «Detectar ⌘C con el teclado»): event tap de solo escucha (Monitorización de entrada) que detecta ⌘C ⌘C por teclas y guarda el portapapeles 150 ms después. Mientras funciona, `ClipboardWatcher` no detecta dobles copias. Reintenta cada 2 s y al activarse la app hasta tener permiso |
 | `HotKey.swift` | `Shortcut` (opciones de Ajustes) y atajo global con Carbon `RegisterEventHotKey` |
 | `QuickPanel.swift` | Panel tipo Spotlight (`KeyPanel`, `QuickPanelController`, `PickerModel`): ↑↓, ↩ copia y devuelve el foco a la app anterior, ⌘P fija, ⌘⌫ papelera, esc |
 | `SavedBubble.swift` | Burbuja «Nota guardada» junto al puntero al guardar (panel sin bordes, no activa ni recibe clics, se desvanece en 1 s) |
@@ -73,11 +74,13 @@ git tag v1.0.1 && git push origin v1.0.1
 
 - **El sandbox de Bash aísla el portapapeles**: `pbcopy` dentro del sandbox no llega a la app. Las pruebas del doble ⌘C se hacen fuera del sandbox (`pbcopy` dos veces con `sleep 0.2`; una contraseña, con un script que añada `org.nspasteboard.ConcealedType`).
 - **Monitor de teclado local y Swift 6**: pasar el `NSEvent` a `MainActor.assumeIsolated` avisa de `Sendable`; sacar antes `keyCode`, modificadores y `windowNumber` y devolver `nil`/`event` fuera.
+- **iTerm2 no vuelve a escribir el portapapeles** si el texto seleccionado ya está (copia al seleccionar o en el primer ⌘C): el `changeCount` no cambia y el doble ⌘C no se ve. Por eso existe `KeyWatcher`. Para diagnosticar otra app, un registro del portapapeles cada 10 ms (`changeCount`, tipos, app delante) mientras el usuario copia.
+- El permiso de Monitorización de entrada va por binario: el de debug lanzado desde la terminal no lo tiene (`keys` en el gancho imprime el estado); probar el tap con la copia instalada.
 - El panel es `.titled` (esquinas y sombra del sistema) con título oculto: su SwiftUI necesita `.ignoresSafeArea(.container, edges: .top)` o deja un hueco arriba. Igual la ventana principal con `titleVisibility = .hidden`.
 
 ## Pruebas manuales
 
-- **Gancho de depuración** (solo debug): `.build/debug/Notity` y `DistributedNotificationCenter` `com.egluu.notity.debug` con objeto `main`, `settings`, `theme:<id>`, `panel`, `bubble`, `query:<texto>`, `trash`, `lang:<es|en|ca>`, `seed` (notas de muestra) o `shot:<carpeta>` (guarda un PNG de cada ventana visible, sin permiso de grabación de pantalla).
+- **Gancho de depuración** (solo debug): `.build/debug/Notity` y `DistributedNotificationCenter` `com.egluu.notity.debug` con objeto `main`, `settings`, `theme:<id>`, `panel`, `bubble`, `keys` (estado del `KeyWatcher` en stdout), `query:<texto>`, `trash`, `lang:<es|en|ca>`, `seed` (notas de muestra) o `shot:<carpeta>` (guarda un PNG de cada ventana visible, sin permiso de grabación de pantalla).
 - **Datos de prueba**: `NOTITY_DATA_DIR=<carpeta> .build/debug/Notity` (solo debug) usa otra carpeta para `notes.json`; nunca probar con las notas reales.
 - Sin teclado real no se prueban: el atajo global, ↑↓/↩/⌘P/⌘⌫ del panel ni la vuelta del foco a la app anterior. Añadir ahí los comandos que haga falta para llevar la app a cada estado sin ratón.
 - **Capturas** (con permiso de grabación de pantalla): `screencapture -x -l <id de ventana>` saca solo la ventana, sin el escritorio. Los ids, con `CGWindowListCopyWindowInfo` filtrando por propietario `Notity`.
