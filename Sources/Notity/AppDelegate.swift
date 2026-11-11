@@ -52,6 +52,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             .receive(on: RunLoop.main)
             .sink { _ in NoteStore.shared.purge() }
             .store(in: &cancellables)
+        KeyWatcher.shared.refresh()
+        Settings.shared.$doubleCopy
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .sink { _ in KeyWatcher.shared.refresh() }
+            .store(in: &cancellables)
+        NotificationCenter.default.addObserver(forName: NSApplication.didBecomeActiveNotification, object: nil,
+                                               queue: .main) { _ in
+            MainActor.assumeIsolated { KeyWatcher.shared.refresh() }
+        }
         LoginItem.enableOnceFromApplications()
         Updater.shared.start()
         installDebugHook()
@@ -267,6 +277,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 case "main": self?.showMainWindow()
                 case "panel": QuickPanelController.shared.show()
                 case "bubble": SavedBubble.shared.show()
+                case "keys": print("keyWatcher running=\(KeyWatcher.shared.isRunning) permission=\(KeyWatcher.shared.hasPermission)"); fflush(stdout)
                 case "seed": NoteStore.shared.seed()
                 case let command? where command.hasPrefix("shot:"):
                     // Renders every visible window of the app to <folder>/<title>.png (no permissions needed).

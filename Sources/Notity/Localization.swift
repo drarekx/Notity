@@ -61,6 +61,11 @@ func tr(_ key: String, _ args: CVarArg...) -> String {
 
 private enum Translations {
     static let en: [String: String] = [
+        "Detectar ⌘C con el teclado": "Detect ⌘C from the keyboard",
+        "Para apps como iTerm2, que no vuelven a copiar si el texto no ha cambiado. Pide el permiso de Monitorización de entrada; Notity solo mira si pulsas ⌘C, nunca lo que escribes.": "For apps like iTerm2, which don't copy again if the text hasn't changed. Needs the Input Monitoring permission; Notity only checks whether you press ⌘C, never what you type.",
+        "Activo: el doble ⌘C funciona en todas las apps.": "On: double ⌘C works in every app.",
+        "Falta el permiso. Activa Notity en Monitorización de entrada.": "Permission missing. Turn on Notity in Input Monitoring.",
+        "Abrir Ajustes del Sistema…": "Open System Settings…",
         "1 día": "1 day",
         "30 días": "30 days",
         "7 días": "7 days",
@@ -164,6 +169,11 @@ private enum Translations {
     ]
 
     static let ca: [String: String] = [
+        "Detectar ⌘C con el teclado": "Detecta ⌘C amb el teclat",
+        "Para apps como iTerm2, que no vuelven a copiar si el texto no ha cambiado. Pide el permiso de Monitorización de entrada; Notity solo mira si pulsas ⌘C, nunca lo que escribes.": "Per a apps com iTerm2, que no tornen a copiar si el text no ha canviat. Demana el permís de Monitoratge d'entrada; Notity només mira si prems ⌘C, mai el que escrius.",
+        "Activo: el doble ⌘C funciona en todas las apps.": "Actiu: el doble ⌘C funciona a totes les apps.",
+        "Falta el permiso. Activa Notity en Monitorización de entrada.": "Falta el permís. Activa Notity a Monitoratge d'entrada.",
+        "Abrir Ajustes del Sistema…": "Obre la Configuració del Sistema…",
         "1 día": "1 dia",
         "30 días": "30 dies",
         "7 días": "7 dies",

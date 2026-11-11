@@ -13,6 +13,8 @@ final class Settings: ObservableObject {
     @Published var doubleCopy: Bool { didSet { defaults.set(doubleCopy, forKey: "doubleCopy") } }
     /// Maximum time between the two copies, in seconds.
     @Published var doubleCopyWindow: Double { didSet { defaults.set(doubleCopyWindow, forKey: "doubleCopyWindow") } }
+    /// Detect double ⌘C from the keyboard too (Input Monitoring), for apps like iTerm2.
+    @Published var keyboardDetection: Bool { didSet { defaults.set(keyboardDetection, forKey: "keyboardDetection") } }
     /// Days a note is kept before it goes to the trash. 0 = never.
     @Published var expiryDays: Int { didSet { defaults.set(expiryDays, forKey: "expiryDays") } }
     /// Global shortcut that opens the quick panel.
@@ -23,6 +25,7 @@ final class Settings: ObservableObject {
         hasLaunched = defaults.bool(forKey: "hasLaunched")
         doubleCopy = defaults.object(forKey: "doubleCopy") as? Bool ?? true
         doubleCopyWindow = defaults.object(forKey: "doubleCopyWindow") as? Double ?? 0.5
+        keyboardDetection = defaults.bool(forKey: "keyboardDetection")
         expiryDays = defaults.object(forKey: "expiryDays") as? Int ?? 7
         shortcut = Shortcut(rawValue: defaults.string(forKey: "shortcut") ?? "") ?? .controlOptionV
     }

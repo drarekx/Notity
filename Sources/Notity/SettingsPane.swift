@@ -5,6 +5,7 @@ struct SettingsPane: View {
     @ObservedObject private var localizer = Localizer.shared
     @ObservedObject private var updater = Updater.shared
     @ObservedObject private var settings = Settings.shared
+    @ObservedObject private var keyWatcher = KeyWatcher.shared
     @State private var launchAtLogin = LoginItem.isEnabled
     @State private var loginError: String?
 
@@ -25,6 +26,30 @@ struct SettingsPane: View {
                         SegmentedControl(options: [(tr("Rápido"), 0.35), (tr("Normal"), 0.5), (tr("Lento"), 0.8)],
                                          selection: $settings.doubleCopyWindow)
                             .disabled(!settings.doubleCopy)
+                    }
+                    Rectangle().fill(Theme.line).frame(height: 1)
+                    SwitchRow(title: tr("Detectar ⌘C con el teclado"),
+                              detail: tr("Para apps como iTerm2, que no vuelven a copiar si el texto no ha cambiado. Pide el permiso de Monitorización de entrada; Notity solo mira si pulsas ⌘C, nunca lo que escribes."),
+                              isOn: Binding(get: { settings.keyboardDetection }, set: { on in
+                                  settings.keyboardDetection = on
+                                  keyWatcher.refresh(ask: on)
+                              }))
+                        .disabled(!settings.doubleCopy)
+                    if settings.keyboardDetection && settings.doubleCopy {
+                        if keyWatcher.isRunning {
+                            Label(tr("Activo: el doble ⌘C funciona en todas las apps."), systemImage: "checkmark.circle.fill")
+                                .font(.system(size: 12)).foregroundStyle(Theme.ok)
+                        } else {
+                            HStack {
+                                Label(tr("Falta el permiso. Activa Notity en Monitorización de entrada."),
+                                      systemImage: "exclamationmark.triangle")
+                                    .font(.system(size: 12)).foregroundStyle(Theme.warn)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                Spacer()
+                                Button(tr("Abrir Ajustes del Sistema…")) { KeyWatcher.openPrivacySettings() }
+                                    .buttonStyle(.appSecondary)
+                            }
+                        }
                     }
                 }
                 .appCard()

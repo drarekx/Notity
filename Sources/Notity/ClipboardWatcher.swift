@@ -53,7 +53,8 @@ final class ClipboardWatcher {
         guard count != lastCount else { return }
         lastCount = count
         if count == ownCount { return }
-        guard Settings.shared.doubleCopy, let text = readText() else { lastCopy = nil; return }
+        // With the keyboard watcher running, it detects double copies (also when the clipboard doesn't change).
+        guard Settings.shared.doubleCopy, !KeyWatcher.shared.isRunning, let text = readText() else { lastCopy = nil; return }
         let now = Date()
         if let last = lastCopy, last.text == text,
            now.timeIntervalSince(last.date) <= Settings.shared.doubleCopyWindow {
